@@ -187,7 +187,7 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
             snackbar.currentSnackbarData?.dismiss()
             val message = context.getString(if (isToday) R.string.logged else R.string.logged_past, formatMl(ml))
             val result = snackbar.showSnackbar(message, context.getString(R.string.undo), duration = SnackbarDuration.Short)
-            if (result == SnackbarResult.ActionPerformed) Plip.removeDrink(drink)
+            if (result == SnackbarResult.ActionPerformed) Plip.removeDrink(context, drink)
         }
     }
 
@@ -468,6 +468,7 @@ private fun WeekCard(state: PlipState, selected: LocalDate, onSelect: (LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HistorySheet(dayName: String, drinks: List<Drink>, onDismiss: () -> Unit) {
+    val context = LocalContext.current
     val sheetContainer = MaterialTheme.colorScheme.surfaceContainerLow
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = sheetContainer) {
         Column(Modifier.padding(horizontal = 24.dp)) {
@@ -504,7 +505,7 @@ private fun HistorySheet(dayName: String, drinks: List<Drink>, onDismiss: () -> 
                         headlineContent = { Text("${formatMl(drink.ml)} ml") },
                         supportingContent = { Text(LocalContext.current.timeOfDay(drink.time)) },
                         trailingContent = {
-                            IconButton(onClick = { Plip.removeDrink(drink) }) {
+                            IconButton(onClick = { Plip.removeDrink(context, drink) }) {
                                 Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.delete_entry))
                             }
                         },

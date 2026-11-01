@@ -60,12 +60,17 @@ object Plip {
         val drink = Store.addDrink(ml, date)
         if (date == LocalDate.now()) {
             dismiss(context)
-            if (!isPaused()) scheduleIn(context, Store.current.settings.interval)
+            if (!isPaused()) scheduleNext(context)
         }
         return drink
     }
 
-    fun removeDrink(drink: Drink) = Store.removeDrink(drink)
+    fun removeDrink(context: Context, drink: Drink) {
+        val wasReached = goalReached()
+        Store.removeDrink(drink)
+        // Back under the goal: reminders pick up again today.
+        if (wasReached && !goalReached() && !isPaused()) scheduleNext(context)
+    }
 
     fun snooze(context: Context, minutes: Int) {
         dismiss(context)
@@ -81,7 +86,7 @@ object Plip {
 
     fun resume(context: Context) {
         Store.setPausedUntil(0)
-        scheduleIn(context, Store.current.settings.interval)
+        scheduleNext(context)
     }
 
     fun updateSettings(context: Context, settings: Settings) {
@@ -89,9 +94,11 @@ object Plip {
         Store.saveSettings(settings)
         val timingChanged = old.interval != settings.interval ||
             old.activeFrom != settings.activeFrom ||
-            old.activeTo != settings.activeTo
+            old.activeTo != settings.activeTo ||
+            // A new goal can end or restart today's reminders
+            old.goal != settings.goal
         if (timingChanged && !isPaused()) {
-            scheduleIn(context, settings.interval)
+            scheduleNext(context)
         } else if (old.countdownLead != settings.countdownLead && !isPaused()) {
             setCountdownAlarm(context, Store.current.nextAt)
         }
@@ -110,7 +117,7 @@ object Plip {
                 setAlarm(context, state.nextAt)
                 setCountdownAlarm(context, state.nextAt)
             }
-            else -> scheduleIn(context, state.settings.interval)
+            else -> scheduleNext(context)
         }
     }
 
@@ -121,13 +128,13 @@ object Plip {
             if (now() < state.pausedUntil) setAlarm(context, state.pausedUntil) else resume(context)
             return
         }
-        if (!isActive(state.settings, LocalTime.now())) {
-            scheduleIn(context, state.settings.interval)
+        if (!isActive(state.settings, LocalTime.now()) || goalReached()) {
+            scheduleNext(context)
             return
         }
         notify(context)
         Store.setReminding(true)
-        scheduleIn(context, state.settings.interval)
+        scheduleNext(context)
     }
 
     /** Rolls the status notification over to the new day. */
@@ -215,6 +222,21 @@ object Plip {
 
     private fun scheduleIn(context: Context, minutes: Int) = scheduleAt(context, now() + minutes * MIN)
 
+    /** One interval from now, or once today's goal is reached, one interval into tomorrow's active time. */
+    private fun scheduleNext(context: Context) {
+        val s = Store.current.settings
+        if (!goalReached()) {
+            scheduleIn(context, s.interval)
+            return
+        }
+        val tomorrow = LocalDate.now().plusDays(1)
+            .atTime(LocalTime.of(s.activeFrom / 60, s.activeFrom % 60))
+            .plusMinutes(s.interval.toLong())
+        scheduleAt(context, tomorrow.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+    }
+
+    private fun goalReached() = Store.current.total >= Store.current.settings.goal
+
     private fun scheduleAt(context: Context, at: Long) {
         val time = intoActiveWindow(at, Store.current.settings)
         Store.setNextAt(time)
@@ -299,6 +321,7 @@ object Plip {
             LiveMode.Off -> false
             LiveMode.Total -> true
             LiveMode.Countdown -> !state.reminding &&
+                state.total < s.goal &&
                 state.pausedUntil <= now() &&
                 state.nextAt > now() &&
                 now() >= state.nextAt - s.countdownLead * MIN - EARLY_SLACK

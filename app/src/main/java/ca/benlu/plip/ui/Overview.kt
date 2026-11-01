@@ -65,8 +65,12 @@ import ca.benlu.plip.R
 import ca.benlu.plip.clock
 import ca.benlu.plip.formatMl
 import ca.benlu.plip.intervalLabel
+import ca.benlu.plip.whenLabel
 import kotlinx.coroutines.delay
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -284,16 +288,19 @@ private fun ReminderTile(state: PlipState) {
     val paused = state.pausedUntil > now
     val active = Plip.isActive(s, LocalTime.now())
     val minsLeft = ((state.nextAt - now) / MIN).toInt() + 1
+    // Once the goal is reached, the next reminder is tomorrow
+    val later = Instant.ofEpochMilli(state.nextAt).atZone(ZoneId.systemDefault()).toLocalDate() != LocalDate.now()
 
     val value = when {
         paused -> context.getString(R.string.until_time, clock(state.pausedUntil))
         !active -> context.getString(R.string.quiet_hours)
+        later -> context.whenLabel(state.nextAt)
         minsLeft <= 1 -> context.getString(R.string.soon)
         minsLeft < 60 -> context.getString(R.string.in_minutes, minsLeft)
         else -> context.getString(R.string.at_clock, clock(state.nextAt))
     }
     // Fills up as the next reminder gets closer
-    val fill = if (paused || !active) 0f else (1f - (state.nextAt - now).toFloat() / (s.interval * MIN)).coerceIn(0.02f, 1f)
+    val fill = if (paused || !active || later) 0f else (1f - (state.nextAt - now).toFloat() / (s.interval * MIN)).coerceIn(0.02f, 1f)
 
     Box {
         StatTile(
