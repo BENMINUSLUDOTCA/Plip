@@ -280,7 +280,7 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 FloatingActionButton(
                     onClick = { historyOpen = true },
