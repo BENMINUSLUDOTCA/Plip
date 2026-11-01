@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -12,8 +14,22 @@ android {
         applicationId = "ca.benlu.plip"
         minSdk = 26
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.14"
+        versionCode = 16
+        versionName = "1.15"
+    }
+
+    // The release key stays out of git. Without keystore.properties the release APK is left unsigned.
+    val keystoreFile = rootProject.file("keystore.properties")
+    if (keystoreFile.exists()) {
+        val keystore = Properties().apply { keystoreFile.inputStream().use { load(it) } }
+        signingConfigs {
+            create("release") {
+                storeFile = rootProject.file(keystore.getProperty("storeFile"))
+                storePassword = keystore.getProperty("storePassword")
+                keyAlias = keystore.getProperty("keyAlias")
+                keyPassword = keystore.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
@@ -21,8 +37,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            // Signed with the local debug key so the APK installs directly.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
