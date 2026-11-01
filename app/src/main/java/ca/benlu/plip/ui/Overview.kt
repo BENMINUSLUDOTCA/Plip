@@ -68,6 +68,8 @@ import ca.benlu.plip.intervalLabel
 import kotlinx.coroutines.delay
 import java.time.LocalTime
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 private const val MIN = 60_000L
 
@@ -119,28 +121,64 @@ private fun rememberNow(): State<Long> = produceState(System.currentTimeMillis()
 
 // ---------- ring ----------
 
+/** The second lap stops short of a full circle so its end stays visible, however much more was drunk. */
+private const val MAX_EXTRA_LAP = 0.92f
+
 @Composable
 private fun DrinkRing(total: Int, goal: Int, modifier: Modifier) {
+    // Up to two laps: the second one shows how far past the goal today is.
     val progress by animateFloatAsState(
-        targetValue = (total.toFloat() / goal).coerceIn(0f, 1f),
+        targetValue = (total.toFloat() / goal).coerceIn(0f, 1f + MAX_EXTRA_LAP),
         animationSpec = tween(900, easing = FastOutSlowInEasing),
         label = "progress",
     )
     val colors = MaterialTheme.colorScheme
     val topLabel = colors.onSurfaceVariant.toArgb()
     val bottomLabel = colors.primary.toArgb()
+    val extraLabel = colors.onPrimary.toArgb()
     val topText = stringResource(R.string.ring_top)
     val bottomText = if (total >= goal) stringResource(R.string.goal_reached) else stringResource(R.string.ring_of, formatMl(goal))
+    val extraText = "+${formatMl(total - goal)}"
 
     Box(modifier, contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = size.minDimension * 0.17f
             val topLeft = Offset(stroke / 2, stroke / 2)
             val arc = Size(size.width - stroke, size.height - stroke)
+            val cx = size.width / 2
+            val cy = size.height / 2
+            val ringRadius = (size.minDimension - stroke) / 2
             drawArc(colors.surfaceContainerHighest, 0f, 360f, false, topLeft, arc, style = Stroke(stroke))
             if (progress > 0f) {
                 // Starts at the bottom like the Pixel widgets
-                drawArc(colors.primary, 90f, 360f * progress, false, topLeft, arc, style = Stroke(stroke, cap = StrokeCap.Round))
+                drawArc(colors.primary, 90f, 360f * progress.coerceAtMost(1f), false, topLeft, arc, style = Stroke(stroke, cap = StrokeCap.Round))
+            }
+            val extra = progress - 1f
+            if (extra > 0f) {
+                val end = 90f + 360f * extra
+                val endRad = Math.toRadians(end.toDouble())
+                val tip = Offset(cx + ringRadius * cos(endRad).toFloat(), cy + ringRadius * sin(endRad).toFloat())
+                // A rim in the background color around the rounded end lifts the second lap off the full ring below.
+                drawCircle(colors.background, radius = stroke / 2 + stroke * 0.12f, center = tip)
+                drawArc(colors.primary, 90f, 360f * extra, false, topLeft, arc, style = Stroke(stroke, cap = StrokeCap.Round))
+
+                val extraPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    textSize = stroke * 0.42f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                    color = extraLabel
+                }
+                // Along the ring, ending just before the cap.
+                val width = extraPaint.measureText(extraText)
+                val sweep = Math.toDegrees((width / ringRadius).toDouble()).toFloat()
+                val padding = Math.toDegrees((stroke * 0.25f / ringRadius).toDouble()).toFloat()
+                val start = end - padding - sweep
+                // In the lower half the text runs the other way round, so it never stands on its head.
+                val lowerHalf = ((start + sweep / 2) % 360f + 360f) % 360f in 0f..180f
+                val path = Path().apply {
+                    val oval = RectF(cx - ringRadius, cy - ringRadius, cx + ringRadius, cy + ringRadius)
+                    if (lowerHalf) addArc(oval, start + sweep, -sweep) else addArc(oval, start, sweep)
+                }
+                drawIntoCanvas { it.nativeCanvas.drawTextOnPath(extraText, path, 0f, extraPaint.textSize * 0.35f, extraPaint) }
             }
 
             val textSize = 14.sp.toPx()
@@ -150,8 +188,6 @@ private fun DrinkRing(total: Int, goal: Int, modifier: Modifier) {
                 this.textSize = textSize
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
-            val cx = size.width / 2
-            val cy = size.height / 2
             drawIntoCanvas { canvas ->
                 // Top: path runs left to right over the top, glyphs grow outward toward the ring.
                 curvedText(canvas.nativeCanvas, topText, cx, cy, inner - gap - textSize * 0.75f, top = true, paint.apply { color = topLabel })

@@ -71,7 +71,8 @@ fun TimelineCard(drinks: List<Drink>, settings: Settings, day: LocalDate, isToda
     val total = drinks.sumOf { it.ml }
     val nowFraction = if (isToday) fraction(now) else 1f
     val status = when {
-        total >= goal -> stringResource(R.string.goal_reached)
+        total > goal -> "${stringResource(R.string.goal_reached)} · +${formatMl(total - goal)} ml"
+        total == goal -> stringResource(R.string.goal_reached)
         !isToday -> stringResource(R.string.pace_missed, formatMl(goal - total))
         nowFraction <= 0f -> stringResource(R.string.pace_not_started, context.timeOfDay(settings.activeFrom))
         else -> {
@@ -97,15 +98,17 @@ fun TimelineCard(drinks: List<Drink>, settings: Settings, day: LocalDate, isToda
             Canvas(
                 Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
+                    .height(132.dp),
             ) {
                 val w = size.width
                 val h = size.height
-                val top = maxOf(goal, total).toFloat()
-                fun y(ml: Int) = h - ml / top * h
+                // The goal is the ceiling: past it the line levels off, the subtitle says by how much.
+                // It sits a little below the divider, so the dot never touches it.
+                val headroom = 16.dp.toPx()
+                fun y(ml: Int) = h - minOf(ml, goal).toFloat() / goal * (h - headroom)
 
-                // Goal level and the plan towards it
-                drawLine(colors.outlineVariant, Offset(0f, y(goal)), Offset(w, y(goal)), strokeWidth = 1.dp.toPx())
+                // Divider above the chart, then the plan towards the goal
+                drawLine(colors.outlineVariant, Offset(0f, 0f), Offset(w, 0f), strokeWidth = 1.dp.toPx())
                 drawLine(
                     color = colors.outline,
                     start = Offset(0f, h),
