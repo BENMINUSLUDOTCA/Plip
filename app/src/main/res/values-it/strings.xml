@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Impostazioni</string>
+    <string name="back">Indietro</string>
+    <string name="cancel">Annulla</string>
+    <string name="ok">OK</string>
+    <string name="undo">Annulla</string>
+
+    <string name="time_of_day">%1$s</string>
+    <string name="tomorrow_at">domani alle %1$s</string>
+    <string name="date_at">%1$s alle %2$s</string>
+    <plurals name="minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="many">%d minuti</item>
+        <item quantity="other">%d minuti</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%d ora</item>
+        <item quantity="many">%d ore</item>
+        <item quantity="other">%d ore</item>
+    </plurals>
+    <string name="interval_90">1 ora e mezza</string>
+
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="previous_day">Giorno precedente</string>
+    <string name="next_day">Giorno successivo</string>
+    <string name="add">Aggiungi</string>
+    <string name="add_past">Aggiungi</string>
+    <string name="logged">%1$s ml aggiunti</string>
+    <string name="logged_past">%1$s ml aggiunti a quel giorno</string>
+    <string name="history">Cronologia</string>
+    <string name="add_title_today">Cosa hai bevuto?</string>
+    <string name="add_title_yesterday">Aggiungi per ieri</string>
+    <string name="add_title_day">Aggiungi per %1$s</string>
+    <string name="amount_sip">Sorso</string>
+    <string name="amount_cup">Tazza</string>
+    <string name="amount_glass">Bicchiere</string>
+    <string name="amount_can">Lattina</string>
+    <string name="amount_bottle">Bottiglia</string>
+    <string name="amount_big_bottle">Bottiglia grande</string>
+    <string name="other_amount">Altra quantità</string>
+    <string name="last_7_days">Ultimi 7 giorni</string>
+    <string name="week_none">Ancora nessun giorno con l\'obiettivo raggiunto</string>
+    <plurals name="week_reached">
+        <item quantity="one">Obiettivo raggiunto %d giorno</item>
+        <item quantity="many">Obiettivo raggiunto %d giorni</item>
+        <item quantity="other">Obiettivo raggiunto %d giorni</item>
+    </plurals>
+    <plurals name="history_summary">
+        <item quantity="one">%1$s, %2$d bevanda, %3$s ml</item>
+        <item quantity="many">%1$s, %2$d bevande, %3$s ml</item>
+        <item quantity="other">%1$s, %2$d bevande, %3$s ml</item>
+    </plurals>
+    <string name="history_empty">Ancora niente. Tocca «Aggiungi» per il tuo primo sorso.</string>
+    <string name="delete_entry">Elimina</string>
+    <string name="notifications_off_title">Le notifiche sono disattivate</string>
+    <string name="notifications_off_text">Senza notifiche, Plip non può ricordarti di bere.</string>
+    <string name="turn_on">Attiva</string>
+
+    <string name="ring_top">Bevuto</string>
+    <string name="ring_of">di %1$s ml</string>
+    <string name="goal_reached">Obiettivo raggiunto</string>
+    <string name="tile_entries">Bevande</string>
+    <string name="tile_streak">Serie</string>
+    <string name="streak_none">Nessuna</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d giorno</item>
+        <item quantity="many">%d giorni</item>
+        <item quantity="other">%d giorni</item>
+    </plurals>
+    <string name="tile_reminder">Promemoria</string>
+    <string name="tile_paused">In pausa</string>
+    <string name="until_time">fino alle %1$s</string>
+    <string name="quiet_hours">Ore di quiete</string>
+    <string name="soon">A breve</string>
+    <string name="in_minutes">tra %d min</string>
+    <string name="at_clock">alle %1$s</string>
+    <string name="pause_for">Pausa per %1$s</string>
+    <string name="tile_last">Ultimo sorso</string>
+    <string name="last_none_today">Non ancora</string>
+    <string name="last_none">Nessuno</string>
+    <string name="just_now">Proprio ora</string>
+    <string name="minutes_ago">%d min fa</string>
+
+    <string name="section_reminders">Promemoria</string>
+    <string name="remind_every">Ricorda ogni</string>
+    <string name="active_from">Attivo dalle</string>
+    <string name="active_to">Attivo fino alle</string>
+    <string name="active_to_hint">%1$s, poi Plip resta in silenzio</string>
+    <string name="exact_title">Promemoria puntuali</string>
+    <string name="exact_hint">Disattivato. Android può ritardare i promemoria di qualche minuto.</string>
+    <string name="promote_title">Fissa gli aggiornamenti live</string>
+    <string name="promote_hint">Disattivato. Consentilo perché l\'aggiornamento live resti in alto e compaia nella barra di stato.</string>
+    <string name="live_title">Aggiornamento live</string>
+    <string name="live_off">Disattivato</string>
+    <string name="live_total">Totale del giorno sempre visibile</string>
+    <string name="live_countdown">Conto alla rovescia prima del promemoria</string>
+    <string name="live_total_hint">Mostra tutto il giorno quanto hai bevuto</string>
+    <string name="live_countdown_hint">Conta alla rovescia fino al prossimo promemoria nella barra di stato</string>
+    <string name="countdown_starts">Inizio del conto alla rovescia</string>
+    <string name="countdown_lead">%d minuti prima del promemoria</string>
+    <string name="minutes_before">%d minuti prima</string>
+    <string name="sound_title">Suono e vibrazione</string>
+    <string name="sound_hint">Da impostare nelle impostazioni di Android</string>
+    <string name="test_title">Prova promemoria</string>
+    <string name="test_hint">Mostra subito un promemoria</string>
+    <string name="section_drinking">Bere</string>
+    <string name="goal_title">Obiettivo giornaliero</string>
+    <string name="goal_hint">Come riferimento si consigliano circa 1,5–2,5 litri al giorno.</string>
+    <string name="glass_title">Quantità per «Bevuto»</string>
+    <string name="glass_hint">%1$s ml, per il pulsante nella notifica</string>
+    <string name="section_display">Aspetto</string>
+    <string name="dynamic_title">Colori dallo sfondo</string>
+    <string name="dynamic_hint">Altrimenti Plip usa il blu acqua</string>
+    <string name="language_title">Lingua</string>
+    <string name="language_system">Lingua di sistema</string>
+
+    <string name="channel_reminders">Promemoria per bere</string>
+    <string name="channel_reminders_desc">Ti ricorda di bere al tuo ritmo.</string>
+    <string name="channel_live_desc">Conto alla rovescia al prossimo promemoria o totale di oggi.</string>
+    <string name="notif_title">È ora di un sorso</string>
+    <string name="notif_today">Oggi %1$s di %2$s ml.</string>
+    <string name="notif_goal_done">Obiettivo raggiunto, %1$s ml oggi.</string>
+    <string name="action_drank">%1$s ml bevuti</string>
+    <string name="action_snooze">Tra %d min</string>
+    <string name="live_countdown_title">Quasi ora di bere</string>
+    <string name="live_countdown_text">Promemoria alle %1$s. Oggi %2$s di %3$s ml.</string>
+    <string name="live_total_title">%1$s di %2$s ml</string>
+    <string name="live_total_done">Obiettivo raggiunto, %1$s ml</string>
+    <string name="live_paused">Promemoria in pausa fino alle %1$s</string>
+    <string name="live_next_today">Prossimo promemoria alle %1$s</string>
+    <string name="live_next_later">Prossimo promemoria %1$s</string>
+    <string name="live_drunk_today">Bevuto oggi</string>
+
+    <string name="timeline_title">Nel corso della giornata</string>
+    <string name="legend_plan">Piano</string>
+    <string name="pace_on_track">Sei in linea con il piano</string>
+    <string name="pace_behind">%1$s ml indietro rispetto al piano</string>
+    <string name="pace_ahead">%1$s ml avanti rispetto al piano</string>
+    <string name="pace_not_started">Il piano inizia alle %1$s</string>
+    <string name="pace_missed">%1$s ml sotto l\'obiettivo</string>
+    <!-- Streak warning -->
+    <string name="channel_streak">Avvisi serie</string>
+    <string name="channel_streak_desc">Ti avvisa quando la tua serie sta per finire.</string>
+    <plurals name="streak_title">
+        <item quantity="one">Salva la tua serie di %d giorno</item>
+        <item quantity="many">Salva la tua serie di %d giorni</item>
+        <item quantity="other">Salva la tua serie di %d giorni</item>
+    </plurals>
+    <string name="streak_text">Mancano %1$s ml entro le %2$s.</string>
+    <string name="streak_warning_title">Avviso serie</string>
+    <string name="streak_warning_hint">%1$s prima della fine del tuo orario attivo</string>
+    <string name="streak_warning_option">%1$s prima</string>
+
+    <!-- Developer -->
+    <string name="section_developer">Sviluppatore</string>
+    <string name="dev_mode_title">Modalità sviluppatore</string>
+    <string name="dev_mode_hint">Mostra pulsanti di prova per le notifiche</string>
+    <string name="test_streak_title">Prova avviso serie</string>
+    <string name="test_streak_hint">Mostra subito l\'avviso serie</string>
+    <string name="test_countdown_title">Prova conto alla rovescia</string>
+    <string name="test_countdown_hint">Mostra subito il conto alla rovescia live</string>
+    <string name="version_title">Versione</string>
+</resources>

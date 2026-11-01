@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Instellingen</string>
+    <string name="back">Terug</string>
+    <string name="cancel">Annuleren</string>
+    <string name="ok">OK</string>
+    <string name="undo">Ongedaan maken</string>
+
+    <string name="time_of_day">%1$s</string>
+    <string name="tomorrow_at">morgen om %1$s</string>
+    <string name="date_at">%1$s om %2$s</string>
+    <plurals name="minutes">
+        <item quantity="one">%d minuut</item>
+        <item quantity="other">%d minuten</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%d uur</item>
+        <item quantity="other">%d uur</item>
+    </plurals>
+    <string name="interval_90">1,5 uur</string>
+
+    <string name="today">Vandaag</string>
+    <string name="yesterday">Gisteren</string>
+    <string name="previous_day">Vorige dag</string>
+    <string name="next_day">Volgende dag</string>
+    <string name="add">Toevoegen</string>
+    <string name="add_past">Toevoegen</string>
+    <string name="logged">%1$s ml toegevoegd</string>
+    <string name="logged_past">%1$s ml toegevoegd aan die dag</string>
+    <string name="history">Geschiedenis</string>
+    <string name="add_title_today">Wat heb je gedronken?</string>
+    <string name="add_title_yesterday">Toevoegen voor gisteren</string>
+    <string name="add_title_day">Toevoegen voor %1$s</string>
+    <string name="amount_sip">Slok</string>
+    <string name="amount_cup">Kopje</string>
+    <string name="amount_glass">Glas</string>
+    <string name="amount_can">Blikje</string>
+    <string name="amount_bottle">Fles</string>
+    <string name="amount_big_bottle">Grote fles</string>
+    <string name="other_amount">Andere hoeveelheid</string>
+    <string name="last_7_days">Laatste 7 dagen</string>
+    <string name="week_none">Nog geen dag met doel gehaald</string>
+    <plurals name="week_reached">
+        <item quantity="one">Doel gehaald op %d dag</item>
+        <item quantity="other">Doel gehaald op %d dagen</item>
+    </plurals>
+    <plurals name="history_summary">
+        <item quantity="one">%1$s, %2$d drankje, %3$s ml</item>
+        <item quantity="other">%1$s, %2$d drankjes, %3$s ml</item>
+    </plurals>
+    <string name="history_empty">Nog niets toegevoegd. Tik op ‘Toevoegen’ voor je eerste slok.</string>
+    <string name="delete_entry">Verwijderen</string>
+    <string name="notifications_off_title">Meldingen staan uit</string>
+    <string name="notifications_off_text">Zonder meldingen kan Plip je niet herinneren om te drinken.</string>
+    <string name="turn_on">Inschakelen</string>
+
+    <string name="ring_top">Gedronken</string>
+    <string name="ring_of">van %1$s ml</string>
+    <string name="goal_reached">Doel gehaald</string>
+    <string name="tile_entries">Drankjes</string>
+    <string name="tile_streak">Reeks</string>
+    <string name="streak_none">Nog geen</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d dag</item>
+        <item quantity="other">%d dagen</item>
+    </plurals>
+    <string name="tile_reminder">Herinnering</string>
+    <string name="tile_paused">Gepauzeerd</string>
+    <string name="until_time">tot %1$s</string>
+    <string name="quiet_hours">Rusttijd</string>
+    <string name="soon">Zo meteen</string>
+    <string name="in_minutes">over %d min</string>
+    <string name="at_clock">om %1$s</string>
+    <string name="pause_for">%1$s pauzeren</string>
+    <string name="tile_last">Laatste slok</string>
+    <string name="last_none_today">Nog niet</string>
+    <string name="last_none">Geen</string>
+    <string name="just_now">Net</string>
+    <string name="minutes_ago">%d min geleden</string>
+
+    <string name="section_reminders">Herinneringen</string>
+    <string name="remind_every">Herinner elke</string>
+    <string name="active_from">Actief vanaf</string>
+    <string name="active_to">Actief tot</string>
+    <string name="active_to_hint">%1$s, daarna blijft Plip stil</string>
+    <string name="exact_title">Op tijd herinneren</string>
+    <string name="exact_hint">Uit. Android kan herinneringen dan een paar minuten uitstellen.</string>
+    <string name="promote_title">Live-updates vastzetten</string>
+    <string name="promote_hint">Uit. Sta het toe zodat de live-update bovenaan blijft en in de statusbalk verschijnt.</string>
+    <string name="live_title">Live-update</string>
+    <string name="live_off">Uit</string>
+    <string name="live_total">Dagtotaal altijd zichtbaar</string>
+    <string name="live_countdown">Aftellen voor de herinnering</string>
+    <string name="live_total_hint">Toont de hele dag hoeveel je al gedronken hebt</string>
+    <string name="live_countdown_hint">Telt in de statusbalk af tot de volgende herinnering</string>
+    <string name="countdown_starts">Aftellen begint</string>
+    <string name="countdown_lead">%d minuten voor de herinnering</string>
+    <string name="minutes_before">%d minuten van tevoren</string>
+    <string name="sound_title">Geluid en trillen</string>
+    <string name="sound_hint">Instellen in de Android-instellingen</string>
+    <string name="test_title">Herinnering testen</string>
+    <string name="test_hint">Toont nu meteen een herinnering</string>
+    <string name="section_drinking">Drinken</string>
+    <string name="goal_title">Dagdoel</string>
+    <string name="goal_hint">Als richtlijn geldt ongeveer 1,5 tot 2,5 liter per dag.</string>
+    <string name="glass_title">Hoeveelheid voor ‘Gedronken’</string>
+    <string name="glass_hint">%1$s ml, voor de knop in de melding</string>
+    <string name="section_display">Weergave</string>
+    <string name="dynamic_title">Kleuren van achtergrond</string>
+    <string name="dynamic_hint">Anders gebruikt Plip waterblauw</string>
+    <string name="language_title">Taal</string>
+    <string name="language_system">Systeemtaal</string>
+
+    <string name="channel_reminders">Drinkherinneringen</string>
+    <string name="channel_reminders_desc">Herinnert je in je eigen ritme om te drinken.</string>
+    <string name="channel_live_desc">Aftellen tot de volgende herinnering of je dagtotaal.</string>
+    <string name="notif_title">Tijd voor een slok</string>
+    <string name="notif_today">Vandaag %1$s van %2$s ml.</string>
+    <string name="notif_goal_done">Dagdoel gehaald, vandaag %1$s ml.</string>
+    <string name="action_drank">%1$s ml gedronken</string>
+    <string name="action_snooze">Over %d min</string>
+    <string name="live_countdown_title">Bijna tijd om te drinken</string>
+    <string name="live_countdown_text">Herinnering om %1$s. Vandaag %2$s van %3$s ml.</string>
+    <string name="live_total_title">%1$s van %2$s ml</string>
+    <string name="live_total_done">Dagdoel gehaald, %1$s ml</string>
+    <string name="live_paused">Herinneringen gepauzeerd tot %1$s</string>
+    <string name="live_next_today">Volgende herinnering om %1$s</string>
+    <string name="live_next_later">Volgende herinnering %1$s</string>
+    <string name="live_drunk_today">Vandaag gedronken</string>
+
+    <string name="timeline_title">Over de dag</string>
+    <string name="legend_plan">Plan</string>
+    <string name="pace_on_track">Je ligt op schema</string>
+    <string name="pace_behind">%1$s ml achter op je plan</string>
+    <string name="pace_ahead">%1$s ml voor op je plan</string>
+    <string name="pace_not_started">Je plan begint om %1$s</string>
+    <string name="pace_missed">%1$s ml onder het doel</string>
+    <!-- Streak warning -->
+    <string name="channel_streak">Reekswaarschuwingen</string>
+    <string name="channel_streak_desc">Waarschuwt je als je reeks bijna afloopt.</string>
+    <plurals name="streak_title">
+        <item quantity="one">Red je reeks van %d dag</item>
+        <item quantity="other">Red je reeks van %d dagen</item>
+    </plurals>
+    <string name="streak_text">Nog %1$s ml tot %2$s.</string>
+    <string name="streak_warning_title">Reekswaarschuwing</string>
+    <string name="streak_warning_hint">%1$s voor het einde van je actieve tijd</string>
+    <string name="streak_warning_option">%1$s van tevoren</string>
+
+    <!-- Developer -->
+    <string name="section_developer">Ontwikkelaar</string>
+    <string name="dev_mode_title">Ontwikkelaarsmodus</string>
+    <string name="dev_mode_hint">Toont testknoppen voor meldingen</string>
+    <string name="test_streak_title">Reekswaarschuwing testen</string>
+    <string name="test_streak_hint">Toont nu meteen de reekswaarschuwing</string>
+    <string name="test_countdown_title">Aftellen testen</string>
+    <string name="test_countdown_hint">Toont nu meteen het live aftellen</string>
+    <string name="version_title">Versie</string>
+</resources>

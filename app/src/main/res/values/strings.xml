@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Plip</string>
+
+    <!-- General -->
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="undo">Undo</string>
+
+    <!-- Time phrases. %1$s is a formatted time of day. -->
+    <string name="time_of_day">%1$s</string>
+    <string name="tomorrow_at">tomorrow at %1$s</string>
+    <string name="date_at">%1$s at %2$s</string>
+    <plurals name="minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <string name="interval_90">1½ hours</string>
+
+    <!-- Home -->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="previous_day">Previous day</string>
+    <string name="next_day">Next day</string>
+    <string name="add">Add</string>
+    <string name="add_past">Add later</string>
+    <string name="logged">%1$s ml logged</string>
+    <string name="logged_past">%1$s ml added to that day</string>
+    <string name="history">Logged</string>
+    <string name="add_title_today">What did you drink?</string>
+    <string name="add_title_yesterday">Add for yesterday</string>
+    <string name="add_title_day">Add for %1$s</string>
+    <string name="amount_sip">Sip</string>
+    <string name="amount_cup">Cup</string>
+    <string name="amount_glass">Glass</string>
+    <string name="amount_can">Can</string>
+    <string name="amount_bottle">Bottle</string>
+    <string name="amount_big_bottle">Large bottle</string>
+    <string name="other_amount">Other amount</string>
+    <string name="last_7_days">Last 7 days</string>
+    <string name="week_none">No day with the goal reached yet</string>
+    <plurals name="week_reached">
+        <item quantity="one">Goal reached on %d day</item>
+        <item quantity="other">Goal reached on %d days</item>
+    </plurals>
+    <plurals name="history_summary">
+        <item quantity="one">%1$s, %2$d drink, %3$s ml</item>
+        <item quantity="other">%1$s, %2$d drinks, %3$s ml</item>
+    </plurals>
+    <string name="history_empty">Nothing logged yet. Tap “Add” to log your first sip.</string>
+    <string name="delete_entry">Delete entry</string>
+    <string name="notifications_off_title">Notifications are off</string>
+    <string name="notifications_off_text">Without them, Plip can\'t remind you to drink.</string>
+    <string name="turn_on">Turn on</string>
+
+    <!-- Overview -->
+    <string name="ring_top">Intake</string>
+    <string name="ring_of">of %1$s ml</string>
+    <string name="goal_reached">Goal reached</string>
+    <string name="tile_entries">Drinks</string>
+    <string name="tile_streak">Streak</string>
+    <string name="streak_none">None yet</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="tile_reminder">Reminder</string>
+    <string name="tile_paused">Paused</string>
+    <string name="until_time">until %1$s</string>
+    <string name="quiet_hours">Quiet hours</string>
+    <string name="soon">Any moment</string>
+    <string name="in_minutes">in %d min</string>
+    <string name="at_clock">at %1$s</string>
+    <string name="pause_for">Pause for %1$s</string>
+    <string name="tile_last">Last sip</string>
+    <string name="last_none_today">None yet</string>
+    <string name="last_none">None</string>
+    <string name="just_now">Just now</string>
+    <string name="minutes_ago">%d min ago</string>
+
+    <!-- Settings -->
+    <string name="section_reminders">Reminders</string>
+    <string name="remind_every">Remind every</string>
+    <string name="active_from">Active from</string>
+    <string name="active_to">Active until</string>
+    <string name="active_to_hint">%1$s, then Plip stays quiet</string>
+    <string name="exact_title">Remind on time</string>
+    <string name="exact_hint">Off. Android may then delay reminders by a few minutes.</string>
+    <string name="promote_title">Pin live updates</string>
+    <string name="promote_hint">Off. Allow it so the live update stays at the top and shows in the status bar.</string>
+    <string name="live_title">Live update</string>
+    <string name="live_off">Off</string>
+    <string name="live_total">Today\'s total, all day</string>
+    <string name="live_countdown">Countdown before the reminder</string>
+    <string name="live_total_hint">Shows all day how much you\'ve had to drink</string>
+    <string name="live_countdown_hint">Counts down to the next reminder in the status bar</string>
+    <string name="countdown_starts">Countdown starts</string>
+    <string name="countdown_lead">%d minutes before the reminder</string>
+    <string name="minutes_before">%d minutes before</string>
+    <string name="sound_title">Sound and vibration</string>
+    <string name="sound_hint">Set in Android settings</string>
+    <string name="test_title">Test reminder</string>
+    <string name="test_hint">Shows a reminder right now</string>
+    <string name="section_drinking">Drinking</string>
+    <string name="goal_title">Daily goal</string>
+    <string name="goal_hint">About 1.5 to 2.5 litres a day is a common guideline.</string>
+    <string name="glass_title">Amount for “Drank”</string>
+    <string name="glass_hint">%1$s ml, for the button in the notification</string>
+    <string name="section_display">Display</string>
+    <string name="dynamic_title">Colours from wallpaper</string>
+    <string name="dynamic_hint">Otherwise Plip uses water blue</string>
+    <string name="language_title">Language</string>
+    <string name="language_system">System language</string>
+
+    <!-- Notifications -->
+    <string name="channel_reminders">Drink reminders</string>
+    <string name="channel_reminders_desc">Reminds you to drink at your own pace.</string>
+    <string name="channel_live_desc">Countdown to the next reminder or today\'s total.</string>
+    <string name="notif_title">Time for a sip</string>
+    <string name="notif_today">Today %1$s of %2$s ml.</string>
+    <string name="notif_goal_done">Daily goal reached, %1$s ml today.</string>
+    <string name="action_drank">Drank %1$s ml</string>
+    <string name="action_snooze">In %d min</string>
+    <string name="live_countdown_title">Almost time to drink</string>
+    <string name="live_countdown_text">Reminder at %1$s. Today %2$s of %3$s ml.</string>
+    <string name="live_total_title">%1$s of %2$s ml</string>
+    <string name="live_total_done">Daily goal reached, %1$s ml</string>
+    <string name="live_paused">Reminders paused until %1$s</string>
+    <string name="live_next_today">Next reminder at %1$s</string>
+    <string name="live_next_later">Next reminder %1$s</string>
+    <string name="live_drunk_today">Drunk today</string>
+
+    <!-- Timeline -->
+    <string name="timeline_title">Over the day</string>
+    <string name="legend_plan">Plan</string>
+    <string name="pace_on_track">You\'re on track</string>
+    <string name="pace_behind">%1$s ml behind your plan</string>
+    <string name="pace_ahead">%1$s ml ahead of your plan</string>
+    <string name="pace_not_started">Your plan starts at %1$s</string>
+    <string name="pace_missed">%1$s ml short of the goal</string>
+    <!-- Streak warning -->
+    <string name="channel_streak">Streak alerts</string>
+    <string name="channel_streak_desc">Warns you when your streak is about to end.</string>
+    <plurals name="streak_title">
+        <item quantity="one">Save your %d-day streak</item>
+        <item quantity="other">Save your %d-day streak</item>
+    </plurals>
+    <string name="streak_text">%1$s ml to go until %2$s.</string>
+    <string name="streak_warning_title">Streak warning</string>
+    <string name="streak_warning_hint">%1$s before your active time ends</string>
+    <string name="streak_warning_option">%1$s before</string>
+
+    <!-- Developer -->
+    <string name="section_developer">Developer</string>
+    <string name="dev_mode_title">Developer mode</string>
+    <string name="dev_mode_hint">Shows test buttons for notifications</string>
+    <string name="test_streak_title">Test streak warning</string>
+    <string name="test_streak_hint">Shows the streak warning right now</string>
+    <string name="test_countdown_title">Test countdown</string>
+    <string name="test_countdown_hint">Shows the live countdown right now</string>
+    <string name="version_title">Version</string>
+</resources>
