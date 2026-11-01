@@ -113,6 +113,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
+/** Shows the beta badge next to the app name. Turn off for the first stable release. */
+private const val BETA = true
+
 private val Amounts = listOf(
     100 to R.string.amount_sip,
     200 to R.string.amount_cup,
@@ -202,6 +205,10 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.app_name))
+                        if (BETA) {
+                            Spacer(Modifier.width(8.dp))
+                            BetaBadge()
+                        }
                     }
                 },
                 actions = {
@@ -507,6 +514,20 @@ private fun HistorySheet(dayName: String, drinks: List<Drink>, onDismiss: () -> 
             }
         }
     }
+}
+
+@Composable
+private fun BetaBadge() {
+    Text(
+        text = stringResource(R.string.beta),
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+    )
 }
 
 @Composable
