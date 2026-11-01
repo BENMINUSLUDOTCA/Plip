@@ -522,11 +522,12 @@ private fun BetaBadge() {
         text = stringResource(R.string.beta),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        // A full pill in the primary color, matching the drop icon in front of the name
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
+            .clip(RoundedCornerShape(percent = 50))
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = 10.dp, vertical = 3.dp),
     )
 }
 
