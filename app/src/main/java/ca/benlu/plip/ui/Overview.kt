@@ -65,7 +65,6 @@ import ca.benlu.plip.R
 import ca.benlu.plip.clock
 import ca.benlu.plip.formatMl
 import ca.benlu.plip.intervalLabel
-import ca.benlu.plip.whenLabel
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
@@ -98,7 +97,7 @@ fun Overview(state: PlipState, drinks: List<Drink>, isToday: Boolean) {
             if (isToday) {
                 ReminderTile(state)
             } else {
-                StatTile(rememberVectorPainter(Icons.Outlined.Notifications), stringResource(R.string.tile_entries), "${drinks.size}", 0f)
+                StatTile(painterResource(R.drawable.ic_drop), stringResource(R.string.tile_entries), "${drinks.size}", 0f)
             }
             LastDrinkTile(drinks, isToday)
             StatTile(
@@ -288,24 +287,30 @@ private fun ReminderTile(state: PlipState) {
     val paused = state.pausedUntil > now
     val active = Plip.isActive(s, LocalTime.now())
     val minsLeft = ((state.nextAt - now) / MIN).toInt() + 1
-    // Once the goal is reached, the next reminder is tomorrow
-    val later = Instant.ofEpochMilli(state.nextAt).atZone(ZoneId.systemDefault()).toLocalDate() != LocalDate.now()
+    // Once the goal is reached, the next reminder is tomorrow: the label says so, the value is just the time.
+    val tomorrow = Instant.ofEpochMilli(state.nextAt).atZone(ZoneId.systemDefault()).toLocalDate() == LocalDate.now().plusDays(1)
 
     val value = when {
         paused -> context.getString(R.string.until_time, clock(state.pausedUntil))
         !active -> context.getString(R.string.quiet_hours)
-        later -> context.whenLabel(state.nextAt)
+        tomorrow -> clock(state.nextAt)
         minsLeft <= 1 -> context.getString(R.string.soon)
         minsLeft < 60 -> context.getString(R.string.in_minutes, minsLeft)
         else -> context.getString(R.string.at_clock, clock(state.nextAt))
     }
     // Fills up as the next reminder gets closer
-    val fill = if (paused || !active || later) 0f else (1f - (state.nextAt - now).toFloat() / (s.interval * MIN)).coerceIn(0.02f, 1f)
+    val fill = if (paused || !active || tomorrow) 0f else (1f - (state.nextAt - now).toFloat() / (s.interval * MIN)).coerceIn(0.02f, 1f)
 
     Box {
         StatTile(
             icon = rememberVectorPainter(Icons.Outlined.Notifications),
-            label = stringResource(if (paused) R.string.tile_paused else R.string.tile_reminder),
+            label = stringResource(
+                when {
+                    paused -> R.string.tile_paused
+                    tomorrow && active -> R.string.tile_reminder_tomorrow
+                    else -> R.string.tile_reminder
+                },
+            ),
             value = value,
             fill = fill,
             onClick = { if (paused) Plip.resume(context) else menuOpen = true },

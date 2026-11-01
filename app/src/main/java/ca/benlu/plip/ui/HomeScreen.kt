@@ -7,6 +7,12 @@ import android.os.Build
 import android.provider.Settings as AndroidSettings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -20,6 +26,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +47,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,6 +73,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -181,6 +190,35 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
     var historyOpen by rememberSaveable { mutableStateOf(false) }
 
+    // Pull to refresh: the title tells what is happening, then turns back into the app name.
+    var refreshing by remember { mutableStateOf(false) }
+    var refreshStatus by remember { mutableStateOf<Int?>(null) }
+    fun refresh() {
+        if (refreshing) return
+        refreshing = true
+        scope.launch {
+            refreshStatus = R.string.refresh_data
+            Store.refresh()
+            Plip.ensureScheduled(context)
+            Plip.showStatus(context, Store.current)
+            Plip.showStreak(context, Store.current)
+            notificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            // Each step stays long enough to be read.
+            delay(700)
+            refreshStatus = R.string.refresh_updates
+            val started = System.currentTimeMillis()
+            val result = runCatching { Updater.check(context, force = true) }
+            delay((900 - (System.currentTimeMillis() - started)).coerceAtLeast(0))
+            refreshing = false
+            refreshStatus = result.fold(
+                onSuccess = { if (it == null) R.string.refresh_up_to_date else R.string.refresh_update_found },
+                onFailure = { R.string.refresh_offline },
+            )
+            delay(1500)
+            refreshStatus = null
+        }
+    }
+
     fun add(ml: Int) {
         val drink = Plip.drink(context, ml, day)
         scope.launch {
@@ -204,10 +242,29 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                             modifier = Modifier.size(24.dp),
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.app_name))
-                        if (BETA) {
-                            Spacer(Modifier.width(8.dp))
-                            BetaBadge()
+                        AnimatedContent(
+                            targetState = refreshStatus,
+                            transitionSpec = {
+                                (fadeIn(tween(250)) + slideInVertically(tween(250)) { it / 2 }) togetherWith
+                                    (fadeOut(tween(180)) + slideOutVertically(tween(180)) { -it / 2 })
+                            },
+                            label = "title",
+                        ) { status ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (status == null) {
+                                    Text(stringResource(R.string.app_name))
+                                    if (BETA) {
+                                        Spacer(Modifier.width(8.dp))
+                                        BetaBadge()
+                                    }
+                                } else {
+                                    Text(stringResource(status), style = MaterialTheme.typography.titleMedium)
+                                    if (refreshing) {
+                                        Spacer(Modifier.width(12.dp))
+                                        CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                                    }
+                                }
+                            }
                         }
                     }
                 },
@@ -240,41 +297,47 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
             }
         },
     ) { padding ->
-        LazyColumn(
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                top = padding.calculateTopPadding(),
-                // room for the floating buttons
-                bottom = padding.calculateBottomPadding() + 160.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        PullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = ::refresh,
+            modifier = Modifier.padding(top = padding.calculateTopPadding()),
         ) {
-            if (!notificationsOn) {
-                item {
-                    NotificationsOffCard {
-                        context.startActivity(
-                            Intent(AndroidSettings.ACTION_APP_NOTIFICATION_SETTINGS)
-                                .putExtra(AndroidSettings.EXTRA_APP_PACKAGE, context.packageName),
-                        )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    // room for the floating buttons
+                    bottom = padding.calculateBottomPadding() + 160.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                if (!notificationsOn) {
+                    item {
+                        NotificationsOffCard {
+                            context.startActivity(
+                                Intent(AndroidSettings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                    .putExtra(AndroidSettings.EXTRA_APP_PACKAGE, context.packageName),
+                            )
+                        }
                     }
                 }
+                update?.let { release ->
+                    item { UpdateCard(release, install, onUpdate = { startUpdate(release) }) }
+                }
+                item {
+                    DaySwitcher(
+                        day = day,
+                        canGoBack = day > today.minusDays(Store.KEEP_DAYS),
+                        onBack = { dayIndex-- },
+                        onForward = { dayIndex++ },
+                        onToday = { dayIndex = today.toEpochDay() },
+                    )
+                }
+                item { Overview(state, drinks, isToday) }
+                item { TimelineCard(drinks, state.settings, day, isToday) }
+                item { WeekCard(state, selected = day, onSelect = { dayIndex = it.toEpochDay() }) }
             }
-            update?.let { release ->
-                item { UpdateCard(release, install, onUpdate = { startUpdate(release) }) }
-            }
-            item {
-                DaySwitcher(
-                    day = day,
-                    canGoBack = day > today.minusDays(Store.KEEP_DAYS),
-                    onBack = { dayIndex-- },
-                    onForward = { dayIndex++ },
-                    onToday = { dayIndex = today.toEpochDay() },
-                )
-            }
-            item { Overview(state, drinks, isToday) }
-            item { TimelineCard(drinks, state.settings, day, isToday) }
-            item { WeekCard(state, selected = day, onSelect = { dayIndex = it.toEpochDay() }) }
         }
     }
 

@@ -70,6 +70,7 @@
         <item quantity="other">%d giorni</item>
     </plurals>
     <string name="tile_reminder">Promemoria</string>
+    <string name="tile_reminder_tomorrow">Promemoria domani</string>
     <string name="tile_paused">In pausa</string>
     <string name="until_time">fino alle %1$s</string>
     <string name="quiet_hours">Ore di quiete</string>
@@ -176,4 +177,9 @@
     <string name="up_to_date">Plip è aggiornato</string>
     <string name="update_found">È disponibile una nuova versione</string>
     <string name="check_failed">Impossibile cercare aggiornamenti</string>
+    <string name="refresh_data">Aggiorno i dati…</string>
+    <string name="refresh_updates">Cerco aggiornamenti…</string>
+    <string name="refresh_up_to_date">Tutto aggiornato</string>
+    <string name="refresh_update_found">Aggiornamento disponibile</string>
+    <string name="refresh_offline">Nessuna connessione</string>
 </resources>

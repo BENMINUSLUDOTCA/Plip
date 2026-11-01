@@ -65,6 +65,7 @@
         <item quantity="other">%d dagen</item>
     </plurals>
     <string name="tile_reminder">Herinnering</string>
+    <string name="tile_reminder_tomorrow">Herinnering morgen</string>
     <string name="tile_paused">Gepauzeerd</string>
     <string name="until_time">tot %1$s</string>
     <string name="quiet_hours">Rusttijd</string>
@@ -170,4 +171,9 @@
     <string name="up_to_date">Plip is up-to-date</string>
     <string name="update_found">Er is een nieuwe versie beschikbaar</string>
     <string name="check_failed">Kon niet zoeken naar updates</string>
+    <string name="refresh_data">Gegevens bijwerken…</string>
+    <string name="refresh_updates">Zoeken naar updates…</string>
+    <string name="refresh_up_to_date">Alles is bijgewerkt</string>
+    <string name="refresh_update_found">Update beschikbaar</string>
+    <string name="refresh_offline">Geen verbinding</string>
 </resources>
