@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import ca.benlu.plip.ui.HomeScreen
 import ca.benlu.plip.ui.PlipTheme
 import ca.benlu.plip.ui.SettingsScreen
@@ -28,6 +30,7 @@ class MainActivity : ComponentActivity() {
         Plip.ensureScheduled(this)
         // Also runs after a language switch, which recreates the activity
         Plip.createChannel(this)
+        Updater.createChannel(this)
         Plip.showStatus(this, Store.current)
         Plip.showStreak(this, Store.current)
         setContent { PlipRoot() }
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Picks up a new day and anything the notification buttons changed.
         Store.refresh()
+        lifecycleScope.launch { runCatching { Updater.check(this@MainActivity) } }
     }
 }
 

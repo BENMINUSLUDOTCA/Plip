@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +54,7 @@ import ca.benlu.plip.Language
 import ca.benlu.plip.Plip
 import ca.benlu.plip.R
 import ca.benlu.plip.Store
+import ca.benlu.plip.Updater
 import ca.benlu.plip.LiveMode
 import ca.benlu.plip.PlipState
 import ca.benlu.plip.Settings
@@ -60,6 +62,7 @@ import ca.benlu.plip.timeOfDay
 import ca.benlu.plip.formatMl
 import ca.benlu.plip.intervalLabel
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 private enum class Dialog { Interval, From, To, Goal, Glass, Live, Lead, Language, Streak }
 
@@ -79,6 +82,7 @@ private fun liveModeHint(mode: LiveMode) = when (mode) {
 @Composable
 fun SettingsScreen(state: PlipState, onBack: () -> Unit) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val s = state.settings
     val scroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     var dialog by remember { mutableStateOf<Dialog?>(null) }
@@ -190,6 +194,19 @@ fun SettingsScreen(state: PlipState, onBack: () -> Unit) {
                 }
             }
 
+            item { Header(stringResource(R.string.section_about)) }
+            item {
+                SettingRow(stringResource(R.string.check_updates), "${stringResource(R.string.version_title)} ${appVersion(context)}") {
+                    scope.launch {
+                        val message = runCatching { Updater.check(context, force = true) }.fold(
+                            onSuccess = { if (it == null) R.string.up_to_date else R.string.update_found },
+                            onFailure = { R.string.check_failed },
+                        )
+                        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
             item { Header(stringResource(R.string.section_developer)) }
             item {
                 ListItem(
@@ -210,12 +227,6 @@ fun SettingsScreen(state: PlipState, onBack: () -> Unit) {
                     SettingRow(stringResource(R.string.test_streak_title), stringResource(R.string.test_streak_hint)) {
                         Plip.showStreak(context, Store.current, test = true)
                     }
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(stringResource(R.string.version_title)) },
-                        supportingContent = { Text(appVersion(context)) },
-                    )
                 }
             }
         }

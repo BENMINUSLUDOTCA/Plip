@@ -3,6 +3,9 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Checks GitHub for new releases and installs them over the app -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Android 16+ Live Update for the ongoing "today so far" notification -->
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <!-- Reminders must arrive on time even in Doze. Sideloaded, so USE_EXACT_ALARM is fine. -->

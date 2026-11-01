@@ -2,6 +2,7 @@ package ca.benlu.plip.ui
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings as AndroidSettings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -49,6 +50,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -92,11 +94,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ca.benlu.plip.Drink
 import ca.benlu.plip.Plip
 import ca.benlu.plip.PlipState
 import ca.benlu.plip.R
+import ca.benlu.plip.Release
 import ca.benlu.plip.Store
+import ca.benlu.plip.Updater
 import ca.benlu.plip.dayLabel
 import ca.benlu.plip.timeOfDay
 import ca.benlu.plip.formatMl
@@ -140,6 +145,28 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
         ) {
             askPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+
+    val update by Updater.available.collectAsStateWithLifecycle()
+    val install by Updater.install.collectAsStateWithLifecycle()
+    var waitingForPermission by remember { mutableStateOf(false) }
+    fun startUpdate(release: Release) {
+        if (!Updater.canInstall(context)) {
+            // Continues on return from the system screen once it is allowed.
+            waitingForPermission = true
+            context.startActivity(
+                Intent(AndroidSettings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:${context.packageName}")),
+            )
+            return
+        }
+        scope.launch { Updater.install(context, release) }
+    }
+    LifecycleResumeEffect(waitingForPermission) {
+        if (waitingForPermission && Updater.canInstall(context)) {
+            waitingForPermission = false
+            update?.let(::startUpdate)
+        }
+        onPauseOrDispose { }
     }
 
     val today = LocalDate.now()
@@ -225,6 +252,9 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                         )
                     }
                 }
+            }
+            update?.let { release ->
+                item { UpdateCard(release, install, onUpdate = { startUpdate(release) }) }
             }
             item {
                 DaySwitcher(
@@ -496,6 +526,44 @@ private fun NotificationsOffCard(onFix: () -> Unit) {
             )
             TextButton(onClick = onFix, modifier = Modifier.align(Alignment.End)) {
                 Text(stringResource(R.string.turn_on), color = MaterialTheme.colorScheme.onErrorContainer)
+            }
+        }
+    }
+}
+
+@Composable
+private fun UpdateCard(release: Release, install: Updater.Install, onUpdate: () -> Unit) {
+    Card(
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
+    ) {
+        Column(Modifier.padding(20.dp)) {
+            Text(stringResource(R.string.update_title, release.version), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(
+                    when (install) {
+                        is Updater.Install.Downloading -> R.string.update_downloading
+                        Updater.Install.Failed -> R.string.update_failed
+                        Updater.Install.Idle -> R.string.update_text
+                    },
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            if (install is Updater.Install.Downloading) {
+                Spacer(Modifier.height(12.dp))
+                val progress = install.progress
+                if (progress == null) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                } else {
+                    LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+                }
+            } else {
+                Button(onClick = onUpdate, modifier = Modifier.align(Alignment.End).padding(top = 8.dp)) {
+                    Text(stringResource(R.string.update_install))
+                }
             }
         }
     }

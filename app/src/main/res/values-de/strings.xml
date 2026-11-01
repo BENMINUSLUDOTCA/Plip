@@ -156,4 +156,18 @@
     <string name="test_countdown_title">Countdown testen</string>
     <string name="test_countdown_hint">Zeigt sofort den Live-Countdown an</string>
     <string name="version_title">Version</string>
+    <string name="channel_updates">Updates</string>
+    <string name="channel_updates_desc">Meldet, wenn eine neue Version von Plip verfügbar ist.</string>
+    <string name="update_notif_title">Plip %1$s ist verfügbar</string>
+    <string name="update_notif_text">Tippe zum Aktualisieren.</string>
+    <string name="update_title">Plip %1$s ist da</string>
+    <string name="update_text">Tippe auf Aktualisieren, dann installiert Plip die neue Version selbst.</string>
+    <string name="update_downloading">Update wird heruntergeladen…</string>
+    <string name="update_failed">Das Update hat nicht geklappt. Versuch es bitte noch mal.</string>
+    <string name="update_install">Aktualisieren</string>
+    <string name="section_about">Über Plip</string>
+    <string name="check_updates">Nach Updates suchen</string>
+    <string name="up_to_date">Plip ist auf dem neuesten Stand</string>
+    <string name="update_found">Eine neue Version ist verfügbar</string>
+    <string name="check_failed">Konnte nicht nach Updates suchen</string>
 </resources>

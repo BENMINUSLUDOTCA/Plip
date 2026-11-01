@@ -9,6 +9,8 @@ class PlipApp : Application() {
         super.onCreate()
         Store.init(this)
         Plip.createChannel(this)
+        Updater.createChannel(this)
+        Updater.load(this)
         // Keeps the ongoing "today so far" notification in sync with every change.
         MainScope().launch {
             Store.state.collect {

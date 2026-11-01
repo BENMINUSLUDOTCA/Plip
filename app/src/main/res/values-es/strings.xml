@@ -162,4 +162,18 @@
     <string name="test_countdown_title">Probar cuenta atrás</string>
     <string name="test_countdown_hint">Muestra la cuenta atrás en directo ahora</string>
     <string name="version_title">Versión</string>
+    <string name="channel_updates">Actualizaciones</string>
+    <string name="channel_updates_desc">Te avisa cuando hay una nueva versión de Plip.</string>
+    <string name="update_notif_title">Plip %1$s está disponible</string>
+    <string name="update_notif_text">Toca para actualizar.</string>
+    <string name="update_title">Ya está aquí Plip %1$s</string>
+    <string name="update_text">Toca Actualizar y Plip instalará la nueva versión por sí sola.</string>
+    <string name="update_downloading">Descargando actualización…</string>
+    <string name="update_failed">La actualización no ha funcionado. Inténtalo de nuevo.</string>
+    <string name="update_install">Actualizar</string>
+    <string name="section_about">Acerca de Plip</string>
+    <string name="check_updates">Buscar actualizaciones</string>
+    <string name="up_to_date">Plip está actualizado</string>
+    <string name="update_found">Hay una nueva versión disponible</string>
+    <string name="check_failed">No se pudo buscar actualizaciones</string>
 </resources>
