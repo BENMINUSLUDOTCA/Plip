@@ -136,8 +136,8 @@ object Plip {
         }
         notify(context)
         Store.setReminding(true)
-        // Until something is logged, the reminder comes back sooner than the interval.
-        scheduleIn(context, min(NAG_AGAIN_MIN, state.settings.interval))
+        // Until something is logged, the reminder comes back sooner than the interval, if wanted.
+        if (state.settings.nagAgain) scheduleIn(context, min(NAG_AGAIN_MIN, state.settings.interval)) else scheduleNext(context)
     }
 
     /** Rolls the status notification over to the new day. */

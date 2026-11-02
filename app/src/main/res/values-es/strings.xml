@@ -182,4 +182,7 @@
     <string name="refresh_up_to_date">Todo al día</string>
     <string name="refresh_update_found">Actualización disponible</string>
     <string name="refresh_offline">Sin conexión</string>
+    <string name="nag_title">Volver a recordar</string>
+    <string name="nag_on">A los 10 minutos si no has registrado nada</string>
+    <string name="nag_off">Solo en tu intervalo</string>
 </resources>

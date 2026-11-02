@@ -14,8 +14,8 @@ android {
         applicationId = "ca.benlu.plip"
         minSdk = 26
         targetSdk = 36
-        versionCode = 22
-        versionName = "1.19"
+        versionCode = 23
+        versionName = "1.19.1"
     }
 
     // The release key stays out of git. Without keystore.properties the release APK is left unsigned.

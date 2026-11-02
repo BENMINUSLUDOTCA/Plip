@@ -114,6 +114,14 @@ fun SettingsScreen(state: PlipState, onBack: () -> Unit) {
         LazyColumn(contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = 32.dp)) {
             item { Header(stringResource(R.string.section_reminders)) }
             item { SettingRow(stringResource(R.string.remind_every), context.intervalLabel(s.interval)) { dialog = Dialog.Interval } }
+            item {
+                ListItem(
+                    modifier = Modifier.clickable { update(s.copy(nagAgain = !s.nagAgain)) },
+                    headlineContent = { Text(stringResource(R.string.nag_title)) },
+                    supportingContent = { Text(stringResource(if (s.nagAgain) R.string.nag_on else R.string.nag_off)) },
+                    trailingContent = { Switch(checked = s.nagAgain, onCheckedChange = null) },
+                )
+            }
             item { SettingRow(stringResource(R.string.active_from), context.timeOfDay(s.activeFrom)) { dialog = Dialog.From } }
             item { SettingRow(stringResource(R.string.active_to), stringResource(R.string.active_to_hint, context.timeOfDay(s.activeTo))) { dialog = Dialog.To } }
             if (!exact) {

@@ -186,4 +186,7 @@
     <string name="refresh_up_to_date">All up to date</string>
     <string name="refresh_update_found">Update available</string>
     <string name="refresh_offline">No connection</string>
+    <string name="nag_title">Remind again</string>
+    <string name="nag_on">After 10 minutes if you haven\'t logged anything</string>
+    <string name="nag_off">Only at your interval</string>
 </resources>

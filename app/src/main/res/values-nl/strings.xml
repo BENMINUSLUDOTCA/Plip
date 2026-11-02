@@ -176,4 +176,7 @@
     <string name="refresh_up_to_date">Alles is bijgewerkt</string>
     <string name="refresh_update_found">Update beschikbaar</string>
     <string name="refresh_offline">Geen verbinding</string>
+    <string name="nag_title">Opnieuw herinneren</string>
+    <string name="nag_on">Na 10 minuten als je niets hebt ingevoerd</string>
+    <string name="nag_off">Alleen op je interval</string>
 </resources>

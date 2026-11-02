@@ -23,6 +23,8 @@ data class Settings(
     val countdownLead: Int = 10,
     /** Minutes before the active time ends to warn about a streak at risk. 0 = off. */
     val streakWarning: Int = 120,
+    /** An unanswered reminder comes back after 10 minutes instead of waiting a full interval. */
+    val nagAgain: Boolean = true,
     val devMode: Boolean = false,
 )
 
@@ -76,6 +78,7 @@ object Store {
             liveMode = LiveMode.entries.firstOrNull { it.name == prefs.getString("liveMode", null) } ?: d.liveMode,
             countdownLead = prefs.getInt("countdownLead", d.countdownLead),
             streakWarning = prefs.getInt("streakWarning", d.streakWarning),
+            nagAgain = prefs.getBoolean("nagAgain", d.nagAgain),
             devMode = prefs.getBoolean("devMode", d.devMode),
         )
         _state.value = PlipState(
@@ -136,6 +139,7 @@ object Store {
             .putString("liveMode", s.liveMode.name)
             .putInt("countdownLead", s.countdownLead)
             .putInt("streakWarning", s.streakWarning)
+            .putBoolean("nagAgain", s.nagAgain)
             .putBoolean("devMode", s.devMode)
             .apply()
         refresh()
