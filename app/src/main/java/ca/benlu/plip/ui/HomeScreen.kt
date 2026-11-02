@@ -104,6 +104,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ca.benlu.plip.BuildConfig
 import ca.benlu.plip.Drink
 import ca.benlu.plip.Plip
 import ca.benlu.plip.PlipState
@@ -205,7 +206,7 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
             notificationsOn = NotificationManagerCompat.from(context).areNotificationsEnabled()
             // Each step stays long enough to be read.
             delay(700)
-            refreshStatus = R.string.refresh_updates
+            if (!BuildConfig.TEST_BUILD) refreshStatus = R.string.refresh_updates
             val started = System.currentTimeMillis()
             val result = runCatching { Updater.check(context, force = true) }
             delay((900 - (System.currentTimeMillis() - started)).coerceAtLeast(0))
@@ -586,11 +587,12 @@ private fun BetaBadge() {
         text = stringResource(R.string.beta),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
-        // A full pill in the primary color, matching the drop icon in front of the name
-        color = MaterialTheme.colorScheme.onPrimary,
+        // A full pill in the primary color, matching the drop icon in front of the name.
+        // The test version uses the error colors instead, so it can't be mistaken for the beta.
+        color = if (BuildConfig.TEST_BUILD) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
             .clip(RoundedCornerShape(percent = 50))
-            .background(MaterialTheme.colorScheme.primary)
+            .background(if (BuildConfig.TEST_BUILD) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
             .padding(horizontal = 10.dp, vertical = 3.dp),
     )
 }

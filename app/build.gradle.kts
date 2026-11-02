@@ -14,8 +14,8 @@ android {
         applicationId = "ca.benlu.plip"
         minSdk = 26
         targetSdk = 36
-        versionCode = 21
-        versionName = "1.18.3"
+        versionCode = 22
+        versionName = "1.19"
     }
 
     // The release key stays out of git. Without keystore.properties the release APK is left unsigned.
@@ -52,6 +52,23 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    // beta: what goes to GitHub. local: the test version installed straight onto a phone,
+    // a separate app next to the beta with its own name, icon and badge, and no update checks.
+    flavorDimensions += "channel"
+    productFlavors {
+        create("beta") {
+            dimension = "channel"
+            buildConfigField("boolean", "TEST_BUILD", "false")
+        }
+        create("local") {
+            dimension = "channel"
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+            buildConfigField("boolean", "TEST_BUILD", "true")
+        }
     }
 }
 

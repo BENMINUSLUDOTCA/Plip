@@ -37,6 +37,8 @@ object Plip {
     private const val NOTIFICATION_ID = 1
     private const val STATUS_ID = 2
     private const val STREAK_ID = 3
+    /** An unanswered reminder comes back after this long, or after the interval if that is shorter. */
+    private const val NAG_AGAIN_MIN = 10
     private const val MIN = 60_000L
 
     // Alarms can fire a few seconds early; still count that as inside the countdown window.
@@ -134,7 +136,8 @@ object Plip {
         }
         notify(context)
         Store.setReminding(true)
-        scheduleNext(context)
+        // Until something is logged, the reminder comes back sooner than the interval.
+        scheduleIn(context, min(NAG_AGAIN_MIN, state.settings.interval))
     }
 
     /** Rolls the status notification over to the new day. */

@@ -316,7 +316,8 @@ private fun ReminderTile(state: PlipState) {
             onClick = { if (paused) Plip.resume(context) else menuOpen = true },
         )
         DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-            listOf(30, 60, 120).forEach { m ->
+            // The fixed choices plus the reminder interval, unless it is one of them already
+            (listOf(30, 60, 120) + s.interval).distinct().sorted().forEach { m ->
                 DropdownMenuItem(
                     text = { Text(context.getString(R.string.pause_for, context.intervalLabel(m))) },
                     onClick = {

@@ -47,6 +47,7 @@ object Updater {
 
     /** Remembered result of the last check, so the card shows up right away on start. */
     fun load(context: Context) {
+        if (BuildConfig.TEST_BUILD) return
         val prefs = prefs(context)
         val version = prefs.getString("version", null) ?: return
         val url = prefs.getString("url", null) ?: return
@@ -58,6 +59,8 @@ object Updater {
      * Returns the newer release, or null when up to date. Throws when GitHub can't be reached.
      */
     suspend fun check(context: Context, force: Boolean = false): Release? = withContext(Dispatchers.IO) {
+        // The test version is a separate app; GitHub releases are for the beta.
+        if (BuildConfig.TEST_BUILD) return@withContext null
         val prefs = prefs(context)
         if (!force && System.currentTimeMillis() - prefs.getLong("checkedAt", 0) < CHECK_EVERY) {
             return@withContext _available.value
