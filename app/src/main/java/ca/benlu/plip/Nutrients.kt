@@ -5,8 +5,8 @@ import androidx.annotation.StringRes
 import org.json.JSONArray
 import org.json.JSONObject
 
-/** Drinks with micronutrients, search and barcode scanning. Only in the test version until it is ready. */
-val NUTRIENTS = BuildConfig.TEST_BUILD
+/** Drinks with micronutrients, search and barcode scanning. Switch off here to hide it again. */
+const val NUTRIENTS = true
 
 /**
  * Micronutrients that drinks actually contribute, in mg.
