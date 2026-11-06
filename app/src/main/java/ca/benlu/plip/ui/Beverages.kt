@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -180,54 +181,57 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = sheetContainer,
     ) {
-        Column(Modifier.padding(horizontal = 24.dp)) {
-            Text(stringResource(R.string.beverage_title), style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = { Text(stringResource(R.string.beverage_search)) },
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    modifier = Modifier.weight(1f),
-                )
-                FilledTonalIconButton(onClick = ::scan, modifier = Modifier.padding(top = 8.dp).height(56.dp).width(56.dp)) {
-                    Icon(painterResource(R.drawable.ic_barcode), contentDescription = stringResource(R.string.beverage_scan))
+        // Stops a good bit below the top of the screen instead of running up under the camera
+        Column(Modifier.fillMaxHeight(0.82f)) {
+            Column(Modifier.padding(horizontal = 24.dp)) {
+                Text(stringResource(R.string.beverage_title), style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        placeholder = { Text(stringResource(R.string.beverage_search)) },
+                        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        modifier = Modifier.weight(1f),
+                    )
+                    FilledTonalIconButton(onClick = ::scan, modifier = Modifier.padding(top = 8.dp).height(56.dp).width(56.dp)) {
+                        Icon(painterResource(R.drawable.ic_barcode), contentDescription = stringResource(R.string.beverage_scan))
+                    }
+                }
+                if (loading) {
+                    Spacer(Modifier.height(12.dp))
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
+                message?.let {
+                    Spacer(Modifier.height(12.dp))
+                    Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            if (loading) {
-                Spacer(Modifier.height(12.dp))
-                LinearProgressIndicator(Modifier.fillMaxWidth())
-            }
-            message?.let {
-                Spacer(Modifier.height(12.dp))
-                Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
 
-        val local = common.filter { term.isEmpty() || it.name.contains(term, ignoreCase = true) }
-        LazyColumn(contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp)) {
-            if (term.isEmpty() && recent.isNotEmpty()) {
-                item { SectionLabel(stringResource(R.string.beverage_recent)) }
-                items(recent, key = { "r" + it.name + it.barcode }) { BeverageItem(it, sheetContainer) { pick(it) } }
-            }
-            if (local.isNotEmpty()) {
-                item { SectionLabel(stringResource(R.string.beverage_common)) }
-                items(local, key = { "c" + it.name }) { BeverageItem(it, sheetContainer) { pick(it) } }
-            }
-            results?.takeIf { it.isNotEmpty() }?.let { found ->
-                item { SectionLabel(stringResource(R.string.beverage_results)) }
-                items(found, key = { "o" + it.barcode + it.name }) { BeverageItem(it, sheetContainer) { pick(it) } }
-            }
-            item {
-                Text(
-                    text = stringResource(R.string.beverage_source),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-                )
+            val local = common.filter { term.isEmpty() || it.name.contains(term, ignoreCase = true) }
+            LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp)) {
+                if (term.isEmpty() && recent.isNotEmpty()) {
+                    item { SectionLabel(stringResource(R.string.beverage_recent)) }
+                    items(recent, key = { "r" + it.name + it.barcode }) { BeverageItem(it, sheetContainer) { pick(it) } }
+                }
+                if (local.isNotEmpty()) {
+                    item { SectionLabel(stringResource(R.string.beverage_common)) }
+                    items(local, key = { "c" + it.name }) { BeverageItem(it, sheetContainer) { pick(it) } }
+                }
+                results?.takeIf { it.isNotEmpty() }?.let { found ->
+                    item { SectionLabel(stringResource(R.string.beverage_results)) }
+                    items(found, key = { "o" + it.barcode + it.name }) { BeverageItem(it, sheetContainer) { pick(it) } }
+                }
+                item {
+                    Text(
+                        text = stringResource(R.string.beverage_source),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                    )
+                }
             }
         }
     }
