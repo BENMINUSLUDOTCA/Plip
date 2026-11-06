@@ -221,4 +221,6 @@
     <string name="close">Schließen</string>
     <string name="torch_on">Licht an</string>
     <string name="torch_off">Licht aus</string>
+    <string name="beverage_not_drink">„%1$s“ ist kein Getränk</string>
+    <string name="beverage_not_drink_unnamed">Das ist kein Getränk</string>
 </resources>

@@ -227,4 +227,6 @@
     <string name="close">Fermer</string>
     <string name="torch_on">Allumer la lampe</string>
     <string name="torch_off">Éteindre la lampe</string>
+    <string name="beverage_not_drink">« %1$s » n\'est pas une boisson</string>
+    <string name="beverage_not_drink_unnamed">Ce n\'est pas une boisson</string>
 </resources>

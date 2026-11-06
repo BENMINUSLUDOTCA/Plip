@@ -117,7 +117,7 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var results by remember { mutableStateOf<List<Beverage>?>(null) }
     var loading by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf<Int?>(null) }
+    var message by remember { mutableStateOf<String?>(null) }
 
     fun pick(b: Beverage) {
         Beverages.remember(context, b)
@@ -136,9 +136,9 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
             runCatching { OpenFoodFacts.search(term) }
                 .onSuccess {
                     results = it
-                    if (it.isEmpty()) message = R.string.beverage_none
+                    if (it.isEmpty()) message = context.getString(R.string.beverage_none)
                 }
-                .onFailure { message = R.string.beverage_offline }
+                .onFailure { message = context.getString(R.string.beverage_offline) }
         } finally {
             loading = false
         }
@@ -151,8 +151,16 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
             loading = true
             message = null
             runCatching { OpenFoodFacts.byBarcode(raw) }
-                .onSuccess { if (it != null) pick(it) else message = R.string.beverage_not_found }
-                .onFailure { message = R.string.beverage_offline }
+                .onSuccess { found ->
+                    when (found) {
+                        is OpenFoodFacts.Lookup.Drink -> pick(found.beverage)
+                        is OpenFoodFacts.Lookup.NotDrink -> message = found.name
+                            ?.let { context.getString(R.string.beverage_not_drink, it) }
+                            ?: context.getString(R.string.beverage_not_drink_unnamed)
+                        OpenFoodFacts.Lookup.Unknown -> message = context.getString(R.string.beverage_not_found)
+                    }
+                }
+                .onFailure { message = context.getString(R.string.beverage_offline) }
             loading = false
         }
     }
@@ -195,7 +203,7 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
             }
             message?.let {
                 Spacer(Modifier.height(12.dp))
-                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 

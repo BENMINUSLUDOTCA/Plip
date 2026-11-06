@@ -6,8 +6,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PointF
 import android.graphics.RectF
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.AttributeSet
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
@@ -46,7 +48,10 @@ import androidx.compose.ui.unit.dp
 import ca.benlu.plip.ui.PlipTheme
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.ViewfinderView
+import kotlin.math.abs
+import kotlin.math.max
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 /** Plip's own scan screen in place of ZXing's: camera full screen, a barcode-shaped window, Plip's controls on top. */
@@ -61,6 +66,8 @@ class ScanActivity : ComponentActivity() {
         barcodeView = findViewById(R.id.zxing_barcode_scanner)
         // ZXing writes its own prompt here; the overlay below has the real one.
         barcodeView.setStatusText("")
+        // Read nearly the whole picture, not just the window, so the barcode needn't sit exactly inside it
+        barcodeView.barcodeView.marginFraction = 0.05
 
         val hasTorch = packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
         findViewById<ComposeView>(R.id.scan_overlay).setContent {
@@ -162,9 +169,19 @@ private fun ScanOverlay(torch: Boolean?, onTorch: () -> Unit, onClose: () -> Uni
     }
 }
 
-/** Dims everything but a rounded window and marks its corners. Replaces ZXing's laser line. */
+/**
+ * Dims everything but a rounded window and marks its corners. Replaces ZXing's laser line.
+ * ZXing reads almost the whole picture, not just the window; when it spots a barcode somewhere,
+ * the window glides over to it and back to the middle once it's lost, so a shaky hand doesn't matter.
+ */
 class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(context, attrs) {
     private val density = resources.displayMetrics.density
+    private val windowWidth = 300 * density
+    private val windowHeight = 170 * density
+
+    // Where ZXing saw parts of a barcode lately, in view coordinates
+    private val seen = ArrayDeque<Pair<Long, PointF>>()
+    private var center: PointF? = null
     private val dim = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(170, 0, 0, 0) }
     private val corners = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
@@ -175,10 +192,33 @@ class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(con
     private val radius = 24 * density
     private val arm = 28 * density
 
+    /** Called by ZXing for every point it finds while decoding, in camera preview coordinates. */
+    override fun addPossibleResultPoint(point: ResultPoint) {
+        val preview = previewSize ?: return
+        val p = PointF(point.x * width / preview.width, point.y * height / preview.height)
+        seen.addLast(SystemClock.uptimeMillis() to p)
+        postInvalidateOnAnimation()
+    }
+
     override fun onDraw(canvas: Canvas) {
         refreshSizes()
         val frame = framingRect ?: return
-        val window = RectF(frame)
+
+        // Aim at the barcode seen in the last moment, otherwise at the middle of the screen
+        val now = SystemClock.uptimeMillis()
+        while (seen.isNotEmpty() && now - seen.first().first > TRACK_MS) seen.removeFirst()
+        val halfW = windowWidth / 2
+        val halfH = windowHeight / 2
+        val targetX = (if (seen.isEmpty()) width / 2f else seen.map { it.second.x }.average().toFloat())
+            .coerceIn(frame.left + halfW, max(frame.left + halfW, frame.right - halfW))
+        val targetY = (if (seen.isEmpty()) height / 2f else seen.map { it.second.y }.average().toFloat())
+            .coerceIn(frame.top + halfH, max(frame.top + halfH, frame.bottom - halfH))
+        val c = center ?: PointF(targetX, targetY).also { center = it }
+        // Ease towards the target instead of jumping
+        c.x += (targetX - c.x) * EASE
+        c.y += (targetY - c.y) * EASE
+        val window = RectF(c.x - halfW, c.y - halfH, c.x + halfW, c.y + halfH)
+        if (seen.isNotEmpty() || abs(targetX - c.x) > 0.5f || abs(targetY - c.y) > 0.5f) postInvalidateOnAnimation()
 
         // Everything outside the rounded window gets dimmed
         canvas.save()
@@ -199,3 +239,6 @@ class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(con
         canvas.drawPath(path, corners)
     }
 }
+
+private const val TRACK_MS = 600L
+private const val EASE = 0.18f

@@ -231,4 +231,6 @@
     <string name="close">Close</string>
     <string name="torch_on">Turn on light</string>
     <string name="torch_off">Turn off light</string>
+    <string name="beverage_not_drink">“%1$s” isn\'t a drink</string>
+    <string name="beverage_not_drink_unnamed">That isn\'t a drink</string>
 </resources>
