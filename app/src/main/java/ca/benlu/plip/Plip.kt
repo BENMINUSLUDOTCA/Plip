@@ -58,8 +58,8 @@ object Plip {
 
     // ---------- actions ----------
 
-    fun drink(context: Context, ml: Int, date: LocalDate = LocalDate.now()): Drink {
-        val drink = Store.addDrink(ml, date)
+    fun drink(context: Context, ml: Int, date: LocalDate = LocalDate.now(), beverage: Beverage? = null): Drink {
+        val drink = Store.addDrink(ml, date, beverage?.name, beverage?.nutrientsFor(ml).orEmpty())
         if (date == LocalDate.now()) {
             dismiss(context)
             if (!isPaused()) scheduleNext(context)

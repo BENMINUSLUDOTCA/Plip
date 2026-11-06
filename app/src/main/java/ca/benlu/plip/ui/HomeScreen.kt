@@ -104,7 +104,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ca.benlu.plip.Beverage
 import ca.benlu.plip.BuildConfig
+import ca.benlu.plip.NUTRIENTS
 import ca.benlu.plip.Drink
 import ca.benlu.plip.Plip
 import ca.benlu.plip.PlipState
@@ -189,6 +191,9 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
     // state changes on every write, so this re-reads the log whenever something was added or removed
     val drinks = remember(state, day) { Store.drinksOn(day) }
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
+    // The drink the add sheet logs; null is plain water
+    var beverage by remember { mutableStateOf<Beverage?>(null) }
+    var pickerOpen by remember { mutableStateOf(false) }
     var historyOpen by rememberSaveable { mutableStateOf(false) }
 
     // Pull to refresh: the title tells what is happening, then turns back into the app name.
@@ -221,7 +226,7 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
     }
 
     fun add(ml: Int) {
-        val drink = Plip.drink(context, ml, day)
+        val drink = Plip.drink(context, ml, day, beverage)
         scope.launch {
             snackbar.currentSnackbarData?.dismiss()
             val message = context.getString(if (isToday) R.string.logged else R.string.logged_past, formatMl(ml))
@@ -291,7 +296,10 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                     Icon(painterResource(R.drawable.ic_history), contentDescription = stringResource(R.string.history))
                 }
                 ExtendedFloatingActionButton(
-                    onClick = { sheetOpen = true },
+                    onClick = {
+                        beverage = null
+                        sheetOpen = true
+                    },
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
                     text = { Text(stringResource(if (isToday) R.string.add else R.string.add_past)) },
                 )
@@ -337,6 +345,7 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                 }
                 item { Overview(state, drinks, isToday) }
                 item { TimelineCard(drinks, state.settings, day, isToday) }
+                if (NUTRIENTS) item { NutrientCard(drinks) }
                 item { WeekCard(state, selected = day, onSelect = { dayIndex = it.toEpochDay() }) }
             }
         }
@@ -353,8 +362,20 @@ fun HomeScreen(state: PlipState, onOpenSettings: () -> Unit) {
                 today.minusDays(1) -> stringResource(R.string.add_title_yesterday)
                 else -> stringResource(R.string.add_title_day, context.dayLabel(day))
             },
+            beverage = beverage,
+            onChangeBeverage = { pickerOpen = true },
             onAdd = ::add,
             onDismiss = { sheetOpen = false },
+        )
+    }
+
+    if (pickerOpen) {
+        BeverageSheet(
+            onPick = {
+                beverage = it
+                pickerOpen = false
+            },
+            onDismiss = { pickerOpen = false },
         )
     }
 }
@@ -394,7 +415,13 @@ private fun DaySwitcher(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddSheet(title: String, onAdd: (Int) -> Unit, onDismiss: () -> Unit) {
+private fun AddSheet(
+    title: String,
+    beverage: Beverage?,
+    onChangeBeverage: () -> Unit,
+    onAdd: (Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     var custom by rememberSaveable { mutableStateOf("") }
@@ -414,6 +441,10 @@ private fun AddSheet(title: String, onAdd: (Int) -> Unit, onDismiss: () -> Unit)
         ) {
             Text(title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
+            if (NUTRIENTS) {
+                BeverageChoice(beverage, onChange = onChangeBeverage)
+                Spacer(Modifier.height(4.dp))
+            }
             Amounts.chunked(3).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { (ml, label) ->
@@ -566,7 +597,7 @@ private fun HistorySheet(dayName: String, drinks: List<Drink>, onDismiss: () -> 
                                 tint = MaterialTheme.colorScheme.primary,
                             )
                         },
-                        headlineContent = { Text("${formatMl(drink.ml)} ml") },
+                        headlineContent = { Text(listOfNotNull("${formatMl(drink.ml)} ml", drink.name).joinToString(" · ")) },
                         supportingContent = { Text(LocalContext.current.timeOfDay(drink.time)) },
                         trailingContent = {
                             IconButton(onClick = { Plip.removeDrink(context, drink) }) {

@@ -31,7 +31,13 @@ data class Settings(
 /** What the ongoing Live Update notification shows. */
 enum class LiveMode { Off, Total, Countdown }
 
-data class Drink(val time: Long, val ml: Int)
+/** [name] and [nutrients] (absolute, in mg) are only set when a specific drink was picked. */
+data class Drink(
+    val time: Long,
+    val ml: Int,
+    val name: String? = null,
+    val nutrients: Map<Nutrient, Float> = emptyMap(),
+)
 
 data class Day(val date: LocalDate, val ml: Int)
 
@@ -96,7 +102,12 @@ object Store {
     }
 
     /** Past days get the current time of day on that date, so entries stay in order. */
-    fun addDrink(ml: Int, date: LocalDate = LocalDate.now()): Drink {
+    fun addDrink(
+        ml: Int,
+        date: LocalDate = LocalDate.now(),
+        name: String? = null,
+        nutrients: Map<Nutrient, Float> = emptyMap(),
+    ): Drink {
         val time = if (date == LocalDate.now()) {
             System.currentTimeMillis()
         } else {
@@ -105,11 +116,14 @@ object Store {
         val log = readLog()
         val key = date.toString()
         val list = log.optJSONArray(key) ?: JSONArray()
-        list.put(JSONArray().put(time).put(ml))
+        // [time, ml] for plain water, [time, ml, name, nutrients] for a picked drink. Older versions read the first two.
+        val entry = JSONArray().put(time).put(ml)
+        if (name != null) entry.put(name).put(Beverages.nutrientsToJson(nutrients))
+        list.put(entry)
         log.put(key, list)
         prune(log)
         writeLog(log)
-        return Drink(time, ml)
+        return Drink(time, ml, name, nutrients)
     }
 
     fun drinksOn(date: LocalDate): List<Drink> =
@@ -172,7 +186,12 @@ object Store {
         val list = log.optJSONArray(date.toString()) ?: return emptyList()
         return List(list.length()) {
             val e = list.getJSONArray(it)
-            Drink(e.getLong(0), e.getInt(1))
+            Drink(
+                time = e.getLong(0),
+                ml = e.getInt(1),
+                name = if (e.length() > 2 && !e.isNull(2)) e.getString(2) else null,
+                nutrients = Beverages.nutrientsFromJson(e.optJSONObject(3)),
+            )
         }
     }
 
