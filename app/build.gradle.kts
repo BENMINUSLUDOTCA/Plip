@@ -14,8 +14,8 @@ android {
         applicationId = "ca.benlu.plip"
         minSdk = 26
         targetSdk = 36
-        versionCode = 23
-        versionName = "1.19.1"
+        versionCode = 24
+        versionName = "1.20"
     }
 
     // The release key stays out of git. Without keystore.properties the release APK is left unsigned.
@@ -81,4 +81,6 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    // Barcode scanner. ZXing instead of Google's code scanner, which isn't reachable on Google Maven right now.
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
