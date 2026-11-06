@@ -80,6 +80,27 @@ object OpenFoodFacts {
         )
         val products = json.optJSONArray("products") ?: return@withContext emptyList()
         (0 until products.length()).mapNotNull { toBeverage(products.getJSONObject(it)) }
+            .distinctBy { it.barcode ?: it.name }
+    }
+
+    // Highest believable amount per 100 ml of a drink. Above it the value was most likely entered per litre.
+    private val ceiling = mapOf(
+        Nutrient.Magnesium to 100f,
+        Nutrient.Calcium to 200f,
+        Nutrient.Potassium to 500f,
+        Nutrient.Sodium to 500f,
+        Nutrient.VitaminC to 200f,
+        Nutrient.Caffeine to 300f,
+    )
+
+    /** Per-litre values get divided by 10; anything still too high is dropped. */
+    private fun plausible(n: Nutrient, mg: Float): Float? {
+        val max = ceiling.getValue(n)
+        return when {
+            mg <= max -> mg
+            mg / 10 <= max -> mg / 10
+            else -> null
+        }
     }
 
     private fun toBeverage(p: JSONObject): Beverage? {
@@ -87,7 +108,7 @@ object OpenFoodFacts {
         val nutriments = p.optJSONObject("nutriments")
         val values = keys.mapNotNull { (nutrient, key) ->
             val grams = nutriments?.optDouble("${key}_100g", Double.NaN) ?: Double.NaN
-            if (grams.isNaN() || grams <= 0) null else nutrient to (grams * 1000).toFloat()
+            if (grams.isNaN() || grams <= 0) null else plausible(nutrient, (grams * 1000).toFloat())?.let { nutrient to it }
         }.toMap()
         return Beverage(
             name = name,
