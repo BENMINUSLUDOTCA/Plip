@@ -180,7 +180,7 @@
     <string name="nag_on">Nach 10 Minuten noch mal, wenn du nichts eingetragen hast</string>
     <string name="nag_off">Nur im eingestellten Intervall</string>
     <string name="nutrients_title">Mikronährstoffe</string>
-    <string name="nutrients_hint">Aus deinen Getränken. Zählt nicht für Ziel und Serie</string>
+    <string name="nutrients_hint">Aus deinen Getränken. Hat keine Auswirkung auf Ziel und Serie</string>
     <string name="nutrients_empty">Wähle beim Eintragen ein Getränk, dann siehst du hier, was drin war</string>
     <string name="nutrient_magnesium">Magnesium</string>
     <string name="nutrient_calcium">Calcium</string>

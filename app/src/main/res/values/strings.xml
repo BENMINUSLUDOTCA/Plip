@@ -190,7 +190,7 @@
     <string name="nag_on">After 10 minutes if you haven\'t logged anything</string>
     <string name="nag_off">Only at your interval</string>
     <string name="nutrients_title">Micronutrients</string>
-    <string name="nutrients_hint">From your drinks. Doesn\'t count towards your goal or streak</string>
+    <string name="nutrients_hint">From your drinks. Has no effect on your goal or streak</string>
     <string name="nutrients_empty">Pick a drink when logging to see what was in it</string>
     <string name="nutrient_magnesium">Magnesium</string>
     <string name="nutrient_calcium">Calcium</string>
