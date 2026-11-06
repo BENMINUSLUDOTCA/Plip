@@ -53,6 +53,7 @@ import ca.benlu.plip.Drink
 import ca.benlu.plip.Nutrient
 import ca.benlu.plip.OpenFoodFacts
 import ca.benlu.plip.R
+import ca.benlu.plip.ScanActivity
 import ca.benlu.plip.formatMl
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
@@ -155,12 +156,11 @@ fun BeverageSheet(onPick: (Beverage) -> Unit, onDismiss: () -> Unit) {
             loading = false
         }
     }
-    val scanPrompt = stringResource(R.string.beverage_scan_prompt)
     fun scan() {
         scanner.launch(
             ScanOptions()
+                .setCaptureActivity(ScanActivity::class.java)
                 .setDesiredBarcodeFormats(ScanOptions.PRODUCT_CODE_TYPES)
-                .setPrompt(scanPrompt)
                 .setBeepEnabled(false)
                 .setOrientationLocked(false),
         )

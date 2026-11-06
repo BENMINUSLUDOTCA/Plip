@@ -224,4 +224,7 @@
     <string name="bev_cola">Cola</string>
     <string name="bev_energy">Bebida energética</string>
     <string name="beverage_scan_prompt">Apunta la cámara al código de barras</string>
+    <string name="close">Cerrar</string>
+    <string name="torch_on">Encender luz</string>
+    <string name="torch_off">Apagar luz</string>
 </resources>

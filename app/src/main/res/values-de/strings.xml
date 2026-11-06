@@ -218,4 +218,7 @@
     <string name="bev_cola">Cola</string>
     <string name="bev_energy">Energydrink</string>
     <string name="beverage_scan_prompt">Halte die Kamera auf den Barcode</string>
+    <string name="close">Schließen</string>
+    <string name="torch_on">Licht an</string>
+    <string name="torch_off">Licht aus</string>
 </resources>

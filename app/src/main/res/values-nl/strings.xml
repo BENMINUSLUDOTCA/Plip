@@ -218,4 +218,7 @@
     <string name="bev_cola">Cola</string>
     <string name="bev_energy">Energiedrank</string>
     <string name="beverage_scan_prompt">Richt de camera op de barcode</string>
+    <string name="close">Sluiten</string>
+    <string name="torch_on">Lamp aan</string>
+    <string name="torch_off">Lamp uit</string>
 </resources>
