@@ -206,14 +206,19 @@ class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(con
     }
 
     /**
-     * The barcode's outline, from picture rows where ZXing found at least two guard patterns
-     * far enough apart. A single hit is usually noise, which is what made the window wander.
+     * The barcode's outline, from picture rows where ZXing got all the way through a barcode:
+     * start guard, the digits, end guard, three different spots. Anything that merely looks like a
+     * start guard (edges, text, patterns) shows up as one spot, reported once per barcode format,
+     * and is ignored, so the window keeps still until there really is a barcode.
      */
     private fun barcodeBounds(now: Long): RectF? {
         while (seen.isNotEmpty() && now - seen.first().first > ROW_MS) seen.removeFirst()
         val rows = seen.groupBy { (it.second.y / (2 * density)).roundToInt() }.values
             .map { row -> row.map { it.second } }
-            .filter { row -> row.size >= 2 && row.maxOf { it.x } - row.minOf { it.x } > 40 * density }
+            .filter { row ->
+                val spots = row.map { (it.x / (3 * density)).roundToInt() }.distinct()
+                spots.size >= 3 && row.maxOf { it.x } - row.minOf { it.x } > 40 * density
+            }
         if (rows.isEmpty()) return null
         val points = rows.flatten()
         return RectF(points.minOf { it.x }, points.minOf { it.y }, points.maxOf { it.x }, points.maxOf { it.y })
