@@ -6,10 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.PointF
 import android.graphics.RectF
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.AttributeSet
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
@@ -50,10 +48,6 @@ import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.ViewfinderView
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 /** Plip's own scan screen in place of ZXing's: camera full screen, a barcode-shaped window, Plip's controls on top. */
@@ -172,98 +166,37 @@ private fun ScanOverlay(torch: Boolean?, onTorch: () -> Unit, onClose: () -> Uni
 }
 
 /**
- * Dims everything but a rounded window and marks its corners. Replaces ZXing's laser line.
- * ZXing reads almost the whole picture. Once it has a barcode in sight, the window shrinks onto it
- * and holds on for a moment even if the barcode slips, then lets go and returns to the middle.
+ * Dims everything but a fixed rounded window in the middle and marks its corners.
+ * Replaces ZXing's laser line. ZXing still reads almost the whole picture, the window is only a guide.
  */
 class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(context, attrs) {
     private val density = resources.displayMetrics.density
-    private val idleWidth = 300 * density
-    private val idleHeight = 170 * density
-    private val minWidth = 140 * density
-    private val minHeight = 90 * density
-    private val padding = 18 * density
+    private val frameWidth = 300 * density
+    private val frameHeight = 170 * density
 
-    // What ZXing saw lately, in view coordinates
-    private val seen = ArrayDeque<Pair<Long, PointF>>()
-    private var window: RectF? = null
-    private var lockTarget: RectF? = null
-    private var lockedUntil = 0L
-
-    private val dim = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val dim = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(170, 0, 0, 0) }
     private val corners = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
+        strokeWidth = 4 * density
     }
 
-    /** Called by ZXing for every point it finds while decoding, in camera preview coordinates. */
-    override fun addPossibleResultPoint(point: ResultPoint) {
-        val preview = previewSize ?: return
-        val p = PointF(point.x * width / preview.width, point.y * height / preview.height)
-        seen.addLast(SystemClock.uptimeMillis() to p)
-        postInvalidateOnAnimation()
-    }
-
-    /**
-     * The barcode's outline, from picture rows where ZXing got all the way through a barcode:
-     * start guard, the digits, end guard, three different spots. Anything that merely looks like a
-     * start guard (edges, text, patterns) shows up as one spot, reported once per barcode format,
-     * and is ignored, so the window keeps still until there really is a barcode.
-     */
-    private fun barcodeBounds(now: Long): RectF? {
-        while (seen.isNotEmpty() && now - seen.first().first > ROW_MS) seen.removeFirst()
-        val rows = seen.groupBy { (it.second.y / (2 * density)).roundToInt() }.values
-            .map { row -> row.map { it.second } }
-            .filter { row ->
-                val spots = row.map { (it.x / (3 * density)).roundToInt() }.distinct()
-                spots.size >= 3 && row.maxOf { it.x } - row.minOf { it.x } > 40 * density
-            }
-        if (rows.isEmpty()) return null
-        val points = rows.flatten()
-        return RectF(points.minOf { it.x }, points.minOf { it.y }, points.maxOf { it.x }, points.maxOf { it.y })
-    }
+    // ZXing's possible result points are ignored, nothing moves
+    override fun addPossibleResultPoint(point: ResultPoint) {}
 
     override fun onDraw(canvas: Canvas) {
         refreshSizes()
         if (framingRect == null) return
-        val now = SystemClock.uptimeMillis()
+        val win = RectF(width / 2f - frameWidth / 2, height / 2f - frameHeight / 2, width / 2f + frameWidth / 2, height / 2f + frameHeight / 2)
+        val r = 24 * density
+        val arm = 28 * density
 
-        barcodeBounds(now)?.let { b ->
-            // Some room around the bars, and never thinner than a barcode is
-            val w = max(b.width() + 2 * padding, minWidth)
-            val h = max(max(b.height() + 2 * padding, w * 0.45f), minHeight)
-            lockTarget = RectF(b.centerX() - w / 2, b.centerY() - h / 2, b.centerX() + w / 2, b.centerY() + h / 2)
-            lockedUntil = now + HOLD_MS
-        }
-        val locked = now < lockedUntil
-        val target = lockTarget?.takeIf { locked }
-            ?: RectF(width / 2f - idleWidth / 2, height / 2f - idleHeight / 2, width / 2f + idleWidth / 2, height / 2f + idleHeight / 2)
-
-        // Snaps on quickly, lets go gently
-        val win = window ?: RectF(target).also { window = it }
-        val ease = if (locked) 0.3f else 0.15f
-        win.left += (target.left - win.left) * ease
-        win.top += (target.top - win.top) * ease
-        win.right += (target.right - win.right) * ease
-        win.bottom += (target.bottom - win.bottom) * ease
-        val moving = abs(target.left - win.left) > 0.5f || abs(target.top - win.top) > 0.5f ||
-            abs(target.right - win.right) > 0.5f || abs(target.bottom - win.bottom) > 0.5f
-        if (moving || locked || seen.isNotEmpty()) postInvalidateOnAnimation()
-
-        val radius = min(24 * density, win.height() / 3)
-        val arm = min(28 * density, min(win.width() / 4, win.height() / 3))
-
-        // Everything outside the rounded window gets dimmed, a little more once it holds a barcode
-        dim.color = Color.argb(if (locked) 190 else 170, 0, 0, 0)
         canvas.save()
-        canvas.clipOutPath(Path().apply { addRoundRect(win, radius, radius, Path.Direction.CW) })
+        canvas.clipOutPath(Path().apply { addRoundRect(win, r, r, Path.Direction.CW) })
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), dim)
         canvas.restore()
 
-        // Four corner brackets that follow the window's rounding, bolder while locked on
-        corners.strokeWidth = (if (locked) 5 else 4) * density
-        val r = radius
         val path = Path().apply {
             with(win) {
                 moveTo(left, top + arm); lineTo(left, top + r); quadTo(left, top, left + r, top); lineTo(left + arm, top)
@@ -275,9 +208,3 @@ class ScanFrameView(context: Context, attrs: AttributeSet?) : ViewfinderView(con
         canvas.drawPath(path, corners)
     }
 }
-
-/** How long a sighting counts towards the barcode's outline. */
-private const val ROW_MS = 350L
-
-/** How long the window holds on after the barcode was last seen. */
-private const val HOLD_MS = 900L
